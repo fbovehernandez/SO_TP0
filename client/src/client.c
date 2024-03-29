@@ -110,7 +110,7 @@ void paquete(int conexion)
 
 	while(strcmp(leido, "exit") != 0) {
 		agregar_a_paquete(paquete, leido, strlen(leido) + 1);
-		leido = readline(">>> ");
+		leido = readline("> ");
 	}
 
 	// Una vez todo cargado, se envia. 
@@ -125,4 +125,8 @@ void terminar_programa(int conexion, t_log* logger, t_config* config)
 {
 	/* Y por ultimo, hay que liberar lo que utilizamos (conexion, log y config) 
 	  con las funciones de las commons y del TP mencionadas en el enunciado */
+
+	log_destroy(logger);
+	config_destroy(config);
+	liberar_conexion(conexion); // Literal solo llama al close -> Esto cierra totalmente la conexion pero del lado del cliente
 }

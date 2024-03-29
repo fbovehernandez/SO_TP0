@@ -57,12 +57,12 @@ int iniciar_servidor(void)
 	// Creamos el socket de escucha del servidor -> Aca se usa la informacion propia de la conexion que se pudo utilizar de la lista 
 	// (suponiendo que se pudo utilizar alguna), ya que de lo contrario devolveria NULL, y tendriamos que manejar los errores.
 	// Tecnicamente (Again) aca es donde deberiamos recorrer la lista e ir probando cada posible conexion... pero eso es otra historia
-	socket_servidor = socket(server_info->ai_family,
-                    server_info->ai_socktype,
-                    server_info->ai_protocol)
+	socket_servidor = socket(servinfo->ai_family,
+                    servinfo->ai_socktype,
+                    servinfo->ai_protocol);
 
 	// Asociamos el socket a un puerto. Aca estaria bueno volver arriba y ver que el ai_addr es literalmente la direccion IP, y bueno... el otro es el length de la misma
-	bind(socket_servidor, servinfo->ai_addr, servinfo->ai_addrlen)
+	bind(socket_servidor, servinfo->ai_addr, servinfo->ai_addrlen);
 
 	// Escuchamos las conexiones entrantes. La ultima, lo prometo. Esto es basicamente hacer que el servidor quede a la espera de una conexion con el cliente
 	// SOMAXCONN es la cantidad maxima de conexiones que puede aceptar. No deberian ser muchas
@@ -102,7 +102,7 @@ int esperar_cliente(int socket_servidor)
 int recibir_operacion(int socket_cliente)
 {
 	/* 
-		TODO
+	Como para todo free hay un malloc, para todo send tiene que haber un recv(). 
 	
 	*/
 

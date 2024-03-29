@@ -43,12 +43,15 @@ int main(void)
 
 	// ADVERTENCIA: Antes de continuar, tenemos que asegurarnos que el servidor esté corriendo para poder conectarnos a él. Ir a server.c
 
-	// Creamos una conexión hacia el servidor
+	// Creamos una conexión hacia el servidor -> Ojo aca que conexion es el ID del socket. 
 	conexion = crear_conexion(ip, puerto);
 
 	// Enviamos al servidor el valor de CLAVE como mensaje
+	// Esto basicamente envia un mensaje, no se llama a la funcion crear_paquete (que llama a crear_buffer) ya que el enviar un mensaje con un string es como
+	// una version muuucho mas simplificada de enviar un paquete con muchos mas datos
+	enviar_mensaje(valor, conexion);
 
-	// Armamos y enviamos el paquete
+	// Armamos y enviamos el paquete -> Esto lo hace todo la funcion, es decir dentro de ella vamos a agregar la linea al paquete y la enviamos
 	paquete(conexion);
 
 	terminar_programa(conexion, logger, config);
@@ -96,8 +99,6 @@ void leer_consola(t_log* logger)
 	free(leido);
 }
 
-
-// TODO
 void paquete(int conexion)
 {
 	// Ahora toca lo divertido!
@@ -105,9 +106,18 @@ void paquete(int conexion)
 	t_paquete* paquete;
 
 	// Leemos y esta vez agregamos las lineas al paquete
+	leido = readline("> ");
 
+	while(strcmp(leido, "exit") != 0) {
+		agregar_a_paquete(paquete, leido, strlen(leido) + 1);
+		leido = readline(">>> ");
+	}
 
+	// Una vez todo cargado, se envia. 
+	enviar_paquete(paquete, conexion);
 	// ¡No te olvides de liberar las líneas y el paquete antes de regresar!
+	free(leido);
+	eliminar_paquete(paquete);
 	
 }
 

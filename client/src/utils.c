@@ -42,14 +42,20 @@ int crear_conexion(char *ip, char* puerto)
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
 
-	getaddrinfo(ip, puerto, &hints, &server_info);
+	int result = getaddrinfo(ip, puerto, &hints, &server_info);
+
+	if(result != 0) {
+		printf("Malio sal");
+		exit(1);
+	}
 
 	// Ahora vamos a crear el socket.
 	int socket_cliente = 0;
+	socket_cliente = socket(server_info->ai_family, server_info->ai_socktype, server_info->ai_protocol);
 
 	// Ahora que tenemos el socket, vamos a conectarlo. Al ser bloqueante tambien queda a la espera de la respuesta del servidor.
 	// Lo que hace es conectar al cliente y con el servidor usando la informacion de la lista servinfo y si conecta asigna el socket. Supongo que aca tambien deberia haber un manejo de errores
-	socket_cliente = connect(socket_cliente, server_info->ai_addr, server_info->ai_addrlen);
+	connect(socket_cliente, server_info->ai_addr, server_info->ai_addrlen);
 
 	freeaddrinfo(server_info);
 

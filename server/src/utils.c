@@ -102,8 +102,12 @@ int esperar_cliente(int socket_servidor)
 int recibir_operacion(int socket_cliente)
 {
 	/* 
+
 	Como para todo free hay un malloc, para todo send tiene que haber un recv(). 
-	
+	Como hay un send con el stream, el recv puede hacer de puntero a ese stream e ir tomando los valores correspondientes. En este caso
+	se declara el cod_op y usando el socket (la conexion preestablecida) se recibe el primero sizeof(int) que matchea con el codop enviado
+	Es importante destacar que el recv devuelve la cantidad de bytes recibidos o -1 si paso un error
+
 	*/
 
 	int cod_op;
@@ -116,10 +120,12 @@ int recibir_operacion(int socket_cliente)
 	}
 }
 
+// Aca tambien hay varias cosas para ver. Al ya saber que tamaño del size es un int, lo recibe y despues usa eso para recibir al stream faltante (string) 
 void* recibir_buffer(int* size, int socket_cliente)
 {
 	void * buffer;
 
+	// Podemos ver al recv como un puntero que se va moviendo por el stream enviado en send
 	recv(socket_cliente, size, sizeof(int), MSG_WAITALL);
 	buffer = malloc(*size);
 	recv(socket_cliente, buffer, *size, MSG_WAITALL);
@@ -127,6 +133,7 @@ void* recibir_buffer(int* size, int socket_cliente)
 	return buffer;
 }
 
+// Esta funcion "deserializa" el mensaje enviado. A tener en cuenta que en el TP va a haber funciones distintas por cada dato a deserializar.
 void recibir_mensaje(int socket_cliente)
 {
 	int size;
@@ -135,6 +142,15 @@ void recibir_mensaje(int socket_cliente)
 	free(buffer);
 }
 
+/* 
+Okey, esta funcion es un poco mas rara. Antes habiamos agreado varios strings dentro de un mismo stream. Es decir, se deberia haber guardado algo
+del estilo size, string, size2, string2, etc... Entonces lo que vamos a hacer aca es ir recibiendo ese size y ese string por cada iteracion del while
+hasta que el desplazamiento sea menor al size, y ya no queden datos para recibir. Primero se recibe el primero dentro del buffer con recibir_buffer
+Luego se carga el tamaño del size en &tamanio, para poder guardar espacio en memoria para el string que tiene ese "tamanio". Luego se 
+copia en valor la cantidad de bytes de tamanio, que es el string correspondiente. Este valor se agrega a la lista usando las commons.
+
+
+*/
 t_list* recibir_paquete(int socket_cliente)
 {
 	int size;

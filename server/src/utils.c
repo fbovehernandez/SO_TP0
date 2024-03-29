@@ -6,7 +6,7 @@ int iniciar_servidor(void)
 {
 	/* < --- Nota sobre lo de abajo --- >
 
-	Las estructuras de abajo son muy lindas pero, que hacen? Bueno... primero, hints es una estructura addrinfo que almacena informacion sobre la comunicacion 
+	Bueno... primero, hints es una estructura addrinfo que almacena informacion sobre la comunicacion 
 	entre el servidor y las demas partes. Asi yo puedo "configurar" la comunicacion. En este caso, "memset" setea los valores de hints en 0
 	AF_UNSPEC se usa para denotar que es IPv4, SOCK_STREAM para indicar que usa TCP, y AI_PASSIVE para no tener que hardcoder la IP de la vm
 	en la que corra el servidor. El getaddrinfo usa esta estructura hints para poder buscar conexiones adecuados y cargarlos en una lista (servinfo). 
@@ -68,7 +68,6 @@ int iniciar_servidor(void)
 	// SOMAXCONN es la cantidad maxima de conexiones que puede aceptar. No deberian ser muchas
 	listen(socket_servidor, SOMAXCONN);
 
-	// Y obvio como era un puntero, e hicimos malloc, hay un free. Porque para todo malloc, hay un free. Y el log trace para saber que esta pasando
 	freeaddrinfo(servinfo);
 	log_trace(logger, "Listo para escuchar a mi cliente");
 
@@ -82,7 +81,7 @@ int esperar_cliente(int socket_servidor)
 	Aceptamos un nuevo cliente. Previamente para esto tiene que haber una solicitud de un cliente. Lo importante es que todas estas syscalls se detienen
 	cuando se ejecutan. Es decir, si yo desde el cliente hago un connect(), no va a seguir el flujo de ejecucion hasta que haya un respuesta
 	del servidor. Por esto se dice que son "bloqueantes". Si tenemos en cuenta el orden, primero debe haber un listen, despues un
-	connect, y un accept para aceptar esa conexion... Gracias beej por tanto, perdon por tan poco. De esta forma, el accept me retorna el glorioso 
+	connect, y un accept para aceptar esa conexion... De esta forma, el accept me retorna el glorioso 
 	Socket para establecer la tan esperada conexion con el cliente
 
 	Como funciona accept() -> Accept cumple la unica pero tan importante funcion de crear el socket de conexion con el cliente una vez que esa conexion llego
